@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dota 2 Legacy | The Eternal Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dota PRO | Root Access</title>
     <style>
         :root {
             --accent: #ff4655;
@@ -13,183 +13,142 @@
             --border: #2d343c;
             --text-main: #ffffff;
             --text-dim: #949ba4;
+            --win: #4caf50;
+            --gold: #f1c40f;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- SIDEBAR --- */
+        /* МЕНЮ */
         aside {
-            width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
-            display: flex; flex-grow: 0; flex-shrink: 0; flex-direction: column; padding: 25px;
-        }
-        .profile-box {
-            background: #1c2127; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center;
-            border: 1px solid var(--border);
-        }
-        .avatar { 
-            width: 70px; height: 70px; background: var(--accent); border-radius: 50%; 
-            margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
-            font-size: 28px; font-weight: bold; border: 3px solid #000;
+            width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 25px; flex-shrink: 0; z-index: 100;
         }
         .nav-link {
-            padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer;
-            color: var(--text-dim); font-weight: 600; transition: 0.2s;
+            padding: 14px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer;
+            color: var(--text-dim); font-weight: 600; transition: 0.2s; text-align: center;
         }
-        .nav-link:hover, .nav-link.active { background: var(--accent); color: white; }
+        .nav-link.active { background: var(--accent); color: white; }
+        .admin-link { border: 1px dashed var(--gold); color: var(--gold) !important; display: none; }
 
-        /* --- MAIN CONTENT --- */
-        main { flex-grow: 1; overflow-y: auto; padding: 40px; position: relative; }
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* КОНТЕНТ */
+        main { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .page { display: none; max-width: 1000px; margin: 0 auto; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
 
-        /* --- COMPONENTS --- */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .card { 
-            background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); 
-            overflow: hidden; cursor: pointer; transition: 0.3s; 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ЭЛЕМЕНТЫ ROOT */
+        .root-badge {
+            background: var(--gold); color: #000; padding: 2px 8px; 
+            border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px;
+            display: none;
         }
-        .card:hover { border-color: var(--accent); transform: scale(1.03); }
-        .card img { width: 100%; display: block; }
-        .card-title { padding: 10px; text-align: center; font-size: 14px; }
 
-        .btn { 
-            background: var(--accent); color: white; border: none; padding: 10px 20px; 
-            border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        .admin-panel {
+            background: #1c1c1c; border: 2px solid var(--gold);
+            padding: 20px; border-radius: 12px; margin-top: 20px;
         }
-        .btn:hover { opacity: 0.8; }
 
-        /* --- DRAFT ANALYZER --- */
-        .draft-box { background: #1c2127; padding: 25px; border-radius: 15px; border-left: 5px solid var(--accent); }
-        .draft-slots { display: flex; gap: 10px; margin: 20px 0; }
-        .slot { width: 80px; height: 50px; background: #000; border: 1px dashed #555; border-radius: 4px; }
-
-        /* --- MODAL --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000;
+        /* КНОПКА ВХОДА */
+        .login-gate {
+            position: fixed; top: 10px; right: 10px; z-index: 1000;
         }
-        .modal-body { background: var(--card-bg); padding: 40px; border-radius: 20px; max-width: 600px; width: 90%; position: relative; }
+        .key-btn { background: none; border: none; color: #222; cursor: pointer; font-size: 12px; }
 
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #16191d; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: #000; color: var(--accent); }
+        /* МОБИЛКА */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside {
+                width: 100%; height: 70px; flex-direction: row; position: fixed; bottom: 0; 
+                padding: 10px; border-top: 1px solid var(--border); justify-content: space-around;
+            }
+            .nav-link { font-size: 11px; padding: 10px; margin: 0; flex: 1; }
+            main { padding-bottom: 90px; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="login-gate">
+        <button class="key-btn" onclick="requestRoot()">[root_access]</button>
+    </div>
+
     <aside>
-        <div class="profile-box">
-            <div class="avatar" id="userAvatar">G</div>
-            <h3 id="userName">Guest</h3>
-            <p id="userRank" style="font-size: 12px; color: var(--text-dim); margin-bottom: 15px;">Herald</p>
-            <button class="btn" style="width: 100%;" onclick="login()">Сменить профиль</button>
-        </div>
-        <div class="nav-link active" onclick="showPage('home', this)">Дашборд</div>
-        <div class="nav-link" onclick="showPage('heroes', this)">Герои</div>
-        <div class="nav-link" onclick="showPage('items', this)">Предметы</div>
-        <div class="nav-link" onclick="showPage('draft', this)">Анализ пика</div>
-        <div class="nav-link" onclick="showPage('matches', this)">Матчи</div>
+        <h2 style="color: var(--accent); font-size: 18px; margin-bottom: 20px; text-align: center;">
+            DOTA HUB <span id="rootBadge" class="root-badge">ROOT</span>
+        </h2>
+        <div class="nav-link active" onclick="showPage('counters', this)">Контрпики</div>
+        <div class="nav-link" onclick="showPage('meta', this)">Мета</div>
+        <div id="adminTab" class="nav-link admin-link" onclick="showPage('admin', this)">Admin Panel</div>
     </aside>
 
     <main>
-        <section id="home" class="page active">
-            <h1 style="font-size: 40px;">Приветствуем в <span style="color: var(--accent);">Dota 2 Hub</span></h1>
-            <p style="color: var(--text-dim); margin: 15px 0 30px;">Твоя статистика и мета патча 7.35d в одном месте.</p>
-            <div style="background: linear-gradient(90deg, #1c2127, transparent); padding: 30px; border-radius: 15px;">
-                <h2>Текущая Мета</h2>
-                <p>Carry: Luna (54% Winrate)</p>
-                <p>Support: Crystal Maiden (52% Winrate)</p>
-            </div>
+        <section id="counters" class="page active">
+            <h1>Контрпики</h1>
+            <div id="counterList" style="margin-top: 20px;">Нажми на героя в консоли или выбери в меню...</div>
         </section>
 
-        <section id="heroes" class="page">
-            <h2 style="margin-bottom: 20px;">Библиотека героев</h2>
-            <div class="grid">
-                <div class="card" onclick="openInfo('Pudge', 'Бродяга с крюком. Идеален для инициации.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png"><div class="card-title">Pudge</div></div>
-                <div class="card" onclick="openInfo('Invoker', 'Мастер заклинаний. Требует высокого мастерства.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/invoker.png"><div class="card-title">Invoker</div></div>
-                <div class="card" onclick="openInfo('Juggernaut', 'Стремительный мечник с защитой от магии.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/juggernaut.png"><div class="card-title">Juggernaut</div></div>
-                <div class="card" onclick="openInfo('Rubick', 'Король воровства чужих способностей.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rubick.png"><div class="card-title">Rubick</div></div>
-            </div>
-        </section>
-
-        <section id="items" class="page">
-            <h2 style="margin-bottom: 20px;">Магазин предметов</h2>
-            <div class="grid">
-                <div class="card" onclick="openInfo('Blink Dagger', 'Цена: 2250. Мгновенная телепортация.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/blink.png"><div class="card-title">Blink Dagger</div></div>
-                <div class="card" onclick="openInfo('Daedalus', 'Цена: 5100. Огромный урон и шанс критического удара.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/lesser_crit.png"><div class="card-title">Daedalus</div></div>
-                <div class="card" onclick="openInfo('Aghanims Scepter', 'Цена: 4200. Улучшает способности героя.')"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png"><div class="card-title">Aghanim</div></div>
-            </div>
-        </section>
-
-        <section id="draft" class="page">
-            <h2>Draft Helper</h2>
-            <div class="draft-box" style="margin-top: 20px;">
-                <p>Нажмите, чтобы сымитировать выбор команды:</p>
-                <div class="draft-slots">
-                    <div class="slot" id="s1"></div><div class="slot" id="s2"></div><div class="slot" id="s3"></div><div class="slot" id="s4"></div><div class="slot" id="s5"></div>
+        <section id="admin" class="page">
+            <h1 style="color: var(--gold);">Root Dashboard</h1>
+            <div class="admin-panel">
+                <h3>Управление сайтом</h3>
+                <br>
+                <button onclick="changeMMR()" style="padding: 10px; background: var(--gold); border: none; font-weight: bold; cursor: pointer;">Накрутить MMR</button>
+                <button onclick="hackMeta()" style="padding: 10px; background: white; border: none; font-weight: bold; cursor: pointer; margin-left: 10px;">Сменить Мету</button>
+                <div id="logConsole" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; margin-top: 20px; font-size: 12px; height: 100px; overflow-y: auto;">
+                    > System ready...<br>
+                    > Waiting for commands...
                 </div>
-                <button class="btn" onclick="analyzeDraft()">Проверить баланс пика</button>
-                <p id="draftResult" style="margin-top: 15px; color: #4caf50;"></p>
             </div>
         </section>
 
-        <section id="matches" class="page">
-            <h2>Киберспорт LIVE</h2>
-            <table>
-                <thead>
-                    <tr><th>Лига</th><th>Матч</th><th>Статус</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>DPC League</td><td>Spirit vs Falcons</td><td style="color: var(--accent);">Прямой эфир</td></tr>
-                    <tr><td>Elite League</td><td>Liquid vs Gaimin</td><td>20:00 (МСК)</td></tr>
-                </tbody>
-            </table>
+        <section id="meta" class="page">
+            <h1>Текущая Мета</h1>
+            <p id="metaText" style="margin-top: 20px;">Загрузка актуальных данных...</p>
         </section>
     </main>
 
-    <div id="modal" class="modal" onclick="this.style.display='none'">
-        <div class="modal-body" onclick="event.stopPropagation()">
-            <h2 id="mTitle">Заголовок</h2>
-            <p id="mDesc" style="margin: 20px 0; color: var(--text-dim); line-height: 1.6;"></p>
-            <button class="btn" onclick="document.getElementById('modal').style.display='none'">Закрыть</button>
-        </div>
-    </div>
-
     <script>
-        // Навигация
+        let isRoot = false;
+
+        function requestRoot() {
+            const pass = prompt("Введите секретный код доступа:");
+            if (pass === "777") {
+                isRoot = true;
+                alert("Доступ разрешен. Права ROOT получены.");
+                document.getElementById('adminTab').style.display = 'block';
+                document.getElementById('rootBadge').style.display = 'inline-block';
+                addLog("Root privileges granted.");
+            } else {
+                alert("Ошибка доступа.");
+            }
+        }
+
+        function addLog(msg) {
+            const console = document.getElementById('logConsole');
+            console.innerHTML += `<br>> ${msg}`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function changeMMR() {
+            const newMmr = Math.floor(Math.random() * (12000 - 8000) + 8000);
+            addLog(`MMR updated to: ${newMmr}`);
+            alert(`Ваш MMR теперь: ${newMmr} (Титан)`);
+        }
+
+        function hackMeta() {
+            document.getElementById('metaText').innerHTML = "<b>ВНИМАНИЕ:</b> Техподдержка Valve подтвердила, что теперь Pudge — самый сильный керри патча!";
+            addLog("Global meta hack applied.");
+            alert("Мета успешно взломана!");
+        }
+
         function showPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
-        }
-
-        // Модалка
-        function openInfo(title, desc) {
-            document.getElementById('mTitle').innerText = title;
-            document.getElementById('mDesc').innerText = desc;
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        // Профиль
-        function login() {
-            const name = prompt("Введите никнейм:");
-            if(name) {
-                document.getElementById('userName').innerText = name;
-                document.getElementById('userAvatar').innerText = name[0].toUpperCase();
-                const mmr = prompt("Твой MMR?");
-                document.getElementById('userRank').innerText = mmr > 4000 ? "Ancient / Divine" : "Archon / Legend";
-            }
-        }
-
-        // Анализатор пика (шуточный алгоритм)
-        function analyzeDraft() {
-            const slots = document.querySelectorAll('.slot');
-            slots.forEach(s => s.style.background = "var(--accent)");
-            document.getElementById('draftResult').innerText = "Анализ: В пике достаточно контроля, но не хватает пуш-потенциала. Рекомендуется взять Nature's Prophet.";
         }
     </script>
 </body>
