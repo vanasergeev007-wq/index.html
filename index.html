@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dota PRO | Root Access</title>
+    <title>Dota PRO | Ultimate Root</title>
     <style>
         :root {
             --accent: #ff4655;
             --bg-dark: #0a0c0e;
             --sidebar-bg: #111419;
-            --card-bg: #1a1d23;
+            --card-bg: #16191d;
             --border: #2d343c;
             --text-main: #ffffff;
             --text-dim: #949ba4;
@@ -20,7 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* МЕНЮ */
+        /* НАВИГАЦИЯ */
         aside {
             width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
             display: flex; flex-direction: column; padding: 25px; flex-shrink: 0; z-index: 100;
@@ -30,118 +30,141 @@
             color: var(--text-dim); font-weight: 600; transition: 0.2s; text-align: center;
         }
         .nav-link.active { background: var(--accent); color: white; }
-        .admin-link { border: 1px dashed var(--gold); color: var(--gold) !important; display: none; }
+        .admin-link { border: 1px dashed var(--gold); color: var(--gold) !important; display: none; margin-top: 10px; }
 
         /* КОНТЕНТ */
         main { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
-        .page { display: none; max-width: 1000px; margin: 0 auto; }
+        .page { display: none; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* СЕТКА ГЕРОЕВ */
+        .hero-selection { margin-bottom: 30px; }
+        .hero-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+            gap: 12px; margin-top: 15px;
+        }
+        .hero-mini-card { 
+            aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; 
+            border: 2px solid transparent; cursor: pointer; transition: 0.2s;
+        }
+        .hero-mini-card img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-mini-card.selected { border-color: var(--accent); transform: scale(1.08); }
+
+        /* РЕЗУЛЬТАТЫ */
+        .counter-box { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+        .counter-item { 
+            display: flex; align-items: center; gap: 15px; background: #22272e; 
+            padding: 12px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid var(--win);
+        }
+        .counter-item img { width: 65px; border-radius: 4px; }
+
+        /* ROOT ЭЛЕМЕНТЫ */
+        .root-badge { background: var(--gold); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; display: none; margin-left: 5px; }
+        .admin-panel { background: #1c1c1c; border: 1px solid var(--gold); padding: 20px; border-radius: 12px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ЭЛЕМЕНТЫ ROOT */
-        .root-badge {
-            background: var(--gold); color: #000; padding: 2px 8px; 
-            border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px;
-            display: none;
-        }
-
-        .admin-panel {
-            background: #1c1c1c; border: 2px solid var(--gold);
-            padding: 20px; border-radius: 12px; margin-top: 20px;
-        }
-
-        /* КНОПКА ВХОДА */
-        .login-gate {
-            position: fixed; top: 10px; right: 10px; z-index: 1000;
-        }
-        .key-btn { background: none; border: none; color: #222; cursor: pointer; font-size: 12px; }
-
-        /* МОБИЛКА */
+        /* МОБИЛЬНАЯ ВЕРСТКА */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             aside {
-                width: 100%; height: 70px; flex-direction: row; position: fixed; bottom: 0; 
+                width: 100%; height: 75px; flex-direction: row; position: fixed; bottom: 0; 
                 padding: 10px; border-top: 1px solid var(--border); justify-content: space-around;
             }
             .nav-link { font-size: 11px; padding: 10px; margin: 0; flex: 1; }
-            main { padding-bottom: 90px; }
+            .desktop-hide { display: none; }
+            main { padding-bottom: 100px; }
+            .hero-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
 <body>
 
-    <div class="login-gate">
-        <button class="key-btn" onclick="requestRoot()">[root_access]</button>
+    <div style="position: fixed; top: 5px; right: 5px; z-index: 1000;">
+        <button onclick="authRoot()" style="background: none; border: none; color: #1a1a1a; cursor: pointer; font-size: 10px;">[root]</button>
     </div>
 
     <aside>
-        <h2 style="color: var(--accent); font-size: 18px; margin-bottom: 20px; text-align: center;">
-            DOTA HUB <span id="rootBadge" class="root-badge">ROOT</span>
+        <h2 class="desktop-hide" style="color: var(--accent); font-size: 18px; text-align: center; margin-bottom: 20px;">
+            DOTA HUB<span id="badge" class="root-badge">ROOT</span>
         </h2>
         <div class="nav-link active" onclick="showPage('counters', this)">Контрпики</div>
         <div class="nav-link" onclick="showPage('meta', this)">Мета</div>
-        <div id="adminTab" class="nav-link admin-link" onclick="showPage('admin', this)">Admin Panel</div>
+        <div id="adminTab" class="nav-link admin-link" onclick="showPage('admin', this)">ADMIN</div>
     </aside>
 
     <main>
         <section id="counters" class="page active">
             <h1>Контрпики</h1>
-            <div id="counterList" style="margin-top: 20px;">Нажми на героя в консоли или выбери в меню...</div>
-        </section>
-
-        <section id="admin" class="page">
-            <h1 style="color: var(--gold);">Root Dashboard</h1>
-            <div class="admin-panel">
-                <h3>Управление сайтом</h3>
-                <br>
-                <button onclick="changeMMR()" style="padding: 10px; background: var(--gold); border: none; font-weight: bold; cursor: pointer;">Накрутить MMR</button>
-                <button onclick="hackMeta()" style="padding: 10px; background: white; border: none; font-weight: bold; cursor: pointer; margin-left: 10px;">Сменить Мету</button>
-                <div id="logConsole" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; margin-top: 20px; font-size: 12px; height: 100px; overflow-y: auto;">
-                    > System ready...<br>
-                    > Waiting for commands...
+            <div class="hero-selection">
+                <p style="color: var(--text-dim); margin: 10px 0;">Выбери врага:</p>
+                <div class="hero-grid">
+                    <div class="hero-mini-card" onclick="getCounter('pudge', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png"></div>
+                    <div class="hero-mini-card" onclick="getCounter('invoker', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/invoker.png"></div>
+                    <div class="hero-mini-card" onclick="getCounter('antimage', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png"></div>
+                    <div class="hero-mini-card" onclick="getCounter('phantom_assassin', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_assassin.png"></div>
+                    <div class="hero-mini-card" onclick="getCounter('slark', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/slark.png"></div>
+                    <div class="hero-mini-card" onclick="getCounter('medusa', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/medusa.png"></div>
                 </div>
+            </div>
+
+            <div class="counter-box">
+                <h3 id="cTitle">Жду выбора...</h3>
+                <div id="cList" style="margin-top: 15px;"></div>
             </div>
         </section>
 
         <section id="meta" class="page">
-            <h1>Текущая Мета</h1>
-            <p id="metaText" style="margin-top: 20px;">Загрузка актуальных данных...</p>
+            <h1>Meta Report</h1>
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-top: 20px;">
+                <p id="metaD">Сильнейший герой патча: <b>Luna</b> (Winrate 54.2%)</p>
+            </div>
+        </section>
+
+        <section id="admin" class="page">
+            <h1 style="color: var(--gold);">Root Access</h1>
+            <div class="admin-panel" style="margin-top: 20px;">
+                <button onclick="hack()" style="padding: 15px; width: 100%; background: var(--gold); border: none; font-weight: bold; border-radius: 8px;">ВЗЛОМАТЬ МЕТУ</button>
+                <div id="console" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; margin-top: 15px; height: 100px; overflow: auto;">
+                    > System initialized...
+                </div>
+            </div>
         </section>
     </main>
 
     <script>
-        let isRoot = false;
+        const data = {
+            'pudge': [{n: 'Lifestealer', d: 'Ест жир с помощью Feast.'}, {n: 'Slark', d: 'Ворует силу бесконечно.'}],
+            'invoker': [{n: 'Anti-Mage', d: 'Манаберн + Манавойд.'}, {n: 'Nyx', d: 'Сжигает ману по КД.'}],
+            'antimage': [{n: 'Legion', d: 'Дуэль в лицо.'}, {n: 'Meepo', d: 'Сетки не дают прыгнуть.'}],
+            'phantom_assassin': [{n: 'Axe', d: 'Крутилка сквозь увороты.'}, {n: 'Tinker', d: 'Лазер = 100% промахи.'}],
+            'slark': [{n: 'Bloodseeker', d: 'Видит в инвизе и ульте.'}, {n: 'Axe', d: 'Агр ловит прыжок.'}],
+            'medusa': [{n: 'Anti-Mage', d: 'Щит падает за 3 удара.'}, {n: 'Lion', d: 'Сосет ману тоннами.'}]
+        };
 
-        function requestRoot() {
-            const pass = prompt("Введите секретный код доступа:");
-            if (pass === "777") {
-                isRoot = true;
-                alert("Доступ разрешен. Права ROOT получены.");
+        function getCounter(id, el) {
+            document.querySelectorAll('.hero-mini-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            const list = document.getElementById('cList');
+            document.getElementById('cTitle').innerText = `Контра для ${id.toUpperCase()}:`;
+            list.innerHTML = '';
+            data[id].forEach(c => {
+                list.innerHTML += `<div class="counter-item"><div><h4>${c.n}</h4><p style="font-size: 13px; color: var(--text-dim)">${c.d}</p></div></div>`;
+            });
+        }
+
+        function authRoot() {
+            if(prompt("Code?") === "777") {
                 document.getElementById('adminTab').style.display = 'block';
-                document.getElementById('rootBadge').style.display = 'inline-block';
-                addLog("Root privileges granted.");
-            } else {
-                alert("Ошибка доступа.");
+                document.getElementById('badge').style.display = 'inline-block';
+                alert("ROOT ACTIVE");
             }
         }
 
-        function addLog(msg) {
-            const console = document.getElementById('logConsole');
-            console.innerHTML += `<br>> ${msg}`;
-            console.scrollTop = console.scrollHeight;
-        }
-
-        function changeMMR() {
-            const newMmr = Math.floor(Math.random() * (12000 - 8000) + 8000);
-            addLog(`MMR updated to: ${newMmr}`);
-            alert(`Ваш MMR теперь: ${newMmr} (Титан)`);
-        }
-
-        function hackMeta() {
-            document.getElementById('metaText').innerHTML = "<b>ВНИМАНИЕ:</b> Техподдержка Valve подтвердила, что теперь Pudge — самый сильный керри патча!";
-            addLog("Global meta hack applied.");
-            alert("Мета успешно взломана!");
+        function hack() {
+            document.getElementById('metaD').innerHTML = "<b>ВЗЛОМАНО:</b> Теперь Pudge — Бог этой игры!";
+            document.getElementById('console').innerHTML += "<br>> Meta database corrupted...";
         }
 
         function showPage(id, el) {
