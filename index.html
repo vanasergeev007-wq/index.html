@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dota HUB | Admin Persistence</title>
+    <title>Dota HUB | Root Editor Pro</title>
     <style>
         :root {
             --accent: #ff4655;
@@ -20,6 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
+        /* SIDEBAR */
         aside {
             width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
             display: flex; flex-direction: column; padding: 25px; flex-shrink: 0; z-index: 100;
@@ -29,147 +30,189 @@
             color: var(--text-dim); font-weight: 600; transition: 0.2s; text-align: center;
         }
         .nav-link.active { background: var(--accent); color: white; }
-        .admin-link { border: 1px dashed var(--gold); color: var(--gold) !important; display: none; }
+        .admin-link { border: 1px dashed var(--gold); color: var(--gold) !important; display: none; margin-top: 10px; }
 
+        /* MAIN CONTENT */
         main { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
-        .page { display: none; max-width: 800px; margin: 0 auto; }
+        .page { display: none; max-width: 900px; margin: 0 auto; }
         .page.active { display: block; animation: fadeIn 0.3s ease; }
 
-        .hero-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; margin-top: 15px; }
-        .hero-mini-card { aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; border: 2px solid transparent; cursor: pointer; }
-        .hero-mini-card img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-mini-card.selected { border-color: var(--accent); transform: scale(1.08); }
+        /* EDIT MODE STYLES */
+        .editable-active { border: 1px dashed var(--gold) !important; padding: 2px; border-radius: 4px; background: rgba(241, 196, 15, 0.1); cursor: text; }
 
-        .counter-box { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-top: 20px; }
-        
-        /* ADMIN TOOLS */
+        /* HERO GRID */
+        .hero-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-top: 15px; }
+        .hero-card { aspect-ratio: 16/9; border-radius: 4px; overflow: hidden; border: 2px solid transparent; cursor: pointer; position: relative; }
+        .hero-card img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-card.selected { border-color: var(--accent); transform: scale(1.05); }
+
+        /* ADMIN PANEL */
         .admin-panel { background: #1c1c1c; border: 1px solid var(--gold); padding: 20px; border-radius: 12px; }
-        .admin-btn { padding: 12px; background: #333; color: #fff; border: 1px solid #444; border-radius: 6px; cursor: pointer; margin: 5px; font-size: 12px; }
-        .admin-btn:hover { background: var(--gold); color: #000; }
-        .root-badge { background: var(--gold); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; display: none; margin-left: 10px; }
+        .btn-admin { padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 6px; cursor: pointer; font-size: 13px; margin: 5px 0; width: 100%; font-weight: bold; }
+        .btn-admin:hover { background: var(--gold); color: black; }
+        .btn-save { background: var(--win) !important; display: none; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            aside { width: 100%; height: 75px; flex-direction: row; position: fixed; bottom: 0; padding: 10px; border-top: 1px solid var(--border); border-right: none; }
+            aside { width: 100%; height: 75px; flex-direction: row; position: fixed; bottom: 0; padding: 10px; border-top: 1px solid var(--border); justify-content: space-around; }
             .nav-link { font-size: 11px; padding: 10px; flex: 1; margin: 0; }
             main { padding-bottom: 100px; }
-            .desktop-hide { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        <button id="loginBtn" onclick="auth()" style="background: none; border: none; color: #222; font-size: 10px; cursor: pointer;">[access_key]</button>
+    <div style="position: fixed; top: 5px; right: 5px; z-index: 1000;">
+        <button onclick="authRoot()" id="rootBtn" style="background: none; border: none; color: #1a1a1a; cursor: pointer; font-size: 10px;">[root]</button>
     </div>
 
     <aside>
-        <h2 class="desktop-hide" style="font-size: 18px; margin-bottom: 20px; color: var(--accent);">DOTA PRO<span id="badge" class="root-badge">ROOT</span></h2>
+        <h2 id="siteLogo" style="color: var(--accent); text-align: center; margin-bottom: 20px;">DOTA HUB<span id="badge" style="display:none; color:var(--gold); font-size: 10px; margin-left: 5px;">● ROOT</span></h2>
         <div class="nav-link active" onclick="showPage('counters', this)">Контрпики</div>
         <div class="nav-link" onclick="showPage('meta', this)">Мета</div>
-        <div id="adminLink" class="nav-link admin-link" onclick="showPage('admin', this)">АДМИНКА</div>
+        <div id="adminTab" class="nav-link admin-link" onclick="showPage('admin', this)">РЕДАКТОР</div>
     </aside>
 
     <main>
         <section id="counters" class="page active">
-            <h1>Контрпики</h1>
-            <div class="hero-grid">
-                <div class="hero-mini-card" onclick="loadC('pudge', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png"></div>
-                <div class="hero-mini-card" onclick="loadC('invoker', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/invoker.png"></div>
-                <div class="hero-mini-card" onclick="loadC('antimage', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png"></div>
-                <div class="hero-mini-card" onclick="loadC('slark', this)"><img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/slark.png"></div>
-            </div>
-            <div class="counter-box">
-                <h3 id="ct">Выбери героя...</h3>
-                <div id="cl"></div>
-            </div>
-        </section>
-
-        <section id="admin" class="page">
-            <h1 style="color: var(--gold);">Root Console</h1>
-            <div class="admin-panel" style="margin-top: 20px;">
-                <p style="margin-bottom: 15px; font-size: 14px;">Статус: <span style="color: var(--win)">АВТОРИЗОВАН</span></p>
-                
-                <div style="border-top: 1px solid #333; padding-top: 15px;">
-                    <button class="admin-btn" onclick="fakeWin()">Генерировать победы</button>
-                    <button class="admin-btn" onclick="editHero()">Изменить данные героя</button>
-                    <button class="admin-btn" onclick="resetAll()" style="color: var(--accent);">Выход / Сброс прав</button>
-                </div>
-
-                <div id="console" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; margin-top: 15px; height: 120px; overflow: auto; border: 1px solid #444;">
-                    > Root system active...
-                </div>
+            <h1 id="pageTitle">Контрпики</h1>
+            <div class="hero-grid" id="mainGrid"></div>
+            <div id="resultBox" style="display:none; margin-top:20px; background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                <h2 id="targetHero">Против: </h2>
+                <div id="countersList" style="margin-top: 15px;"></div>
             </div>
         </section>
 
         <section id="meta" class="page">
-            <h1>Текущая Мета</h1>
-            <p id="mt" style="margin-top: 20px; color: var(--text-dim);">Данные синхронизированы с Valve API...</p>
+            <h1 id="metaTitle">S-Tier Heroes</h1>
+            <div id="metaContent" style="margin-top:20px; line-height: 2; padding: 20px; background: var(--card-bg); border-radius: 12px;">
+                🔥 Carry: Luna, Medusa<br>
+                ⚡ Mid: Puck, Ember Spirit
+            </div>
+        </section>
+
+        <section id="admin" class="page">
+            <h1 style="color: var(--gold);">Root Editor Mode</h1>
+            <div class="admin-panel" style="margin-top: 20px;">
+                <p style="margin-bottom: 15px;">Статус: <span style="color: var(--win)">АВТОРИЗОВАН</span></p>
+                
+                <button class="btn-admin" id="editToggle" onclick="toggleEditMode()">ВКЛЮЧИТЬ РЕДАКТИРОВАНИЕ ТЕКСТА</button>
+                <button class="btn-admin btn-save" id="saveBtn" onclick="saveChanges()">СОХРАНИТЬ ВСЕ ПРАВКИ</button>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                    <button class="btn-admin" style="background: #444;" onclick="changeHeroName()">Переименовать героя</button>
+                    <button class="btn-admin" style="background: #500;" onclick="clearRoot()">Выйти из ROOT</button>
+                </div>
+
+                <div id="adminLog" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; height: 100px; overflow: auto; margin-top: 15px; border: 1px solid #444;">
+                    > Editor Kernel Active...
+                </div>
+            </div>
         </section>
     </main>
 
     <script>
-        const db = {
-            'pudge': [{n:'Lifestealer', d:'Feast крадет HP.'}],
-            'invoker': [{n:'Anti-Mage', d:'Mana Break уничтожает.'}],
-            'antimage': [{n:'Legion', d:'Duel не дает уйти.'}],
-            'slark': [{n:'Bloodseeker', d:'Пассивка видит лоу-хп.'}]
-        };
+        let isEditMode = false;
+        const heroes = [
+            { id: 'pudge', n: 'Pudge', c: ['Lifestealer', 'Slark'] },
+            { id: 'invoker', n: 'Invoker', c: ['Anti-Mage', 'Nyx'] },
+            { id: 'antimage', n: 'Anti-Mage', c: ['Meepo', 'Legion'] },
+            { id: 'slark', n: 'Slark', c: ['Axe', 'Bloodseeker'] }
+        ];
 
-        // ПРОВЕРКА ПРИ ЗАГРУЗКЕ
         window.onload = () => {
-            if (localStorage.getItem('isRoot') === 'true') {
-                enableRoot();
-            }
+            renderHeroes();
+            loadSavedContent();
+            if(localStorage.getItem('isRoot') === 'true') enableRoot();
         };
 
-        function auth() {
-            if(prompt("Код доступа:") === "777") {
+        function renderHeroes() {
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = '';
+            heroes.forEach(h => {
+                grid.innerHTML += `
+                    <div class="hero-card" onclick="showCounters('${h.id}', this)">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${h.id}.png">
+                        <div style="font-size: 10px; text-align: center; background: rgba(0,0,0,0.8); position: absolute; bottom: 0; width: 100%;">${h.n}</div>
+                    </div>`;
+            });
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const elements = ['pageTitle', 'metaTitle', 'metaContent', 'siteLogo'];
+            const btn = document.getElementById('editToggle');
+            const saveBtn = document.getElementById('saveBtn');
+
+            elements.forEach(id => {
+                const el = document.getElementById(id);
+                el.contentEditable = isEditMode;
+                el.classList.toggle('editable-active', isEditMode);
+            });
+
+            btn.innerText = isEditMode ? "ВЫКЛЮЧИТЬ РЕДАКТИРОВАНИЕ" : "ВКЛЮЧИТЬ РЕДАКТИРОВАНИЕ ТЕКСТА";
+            btn.style.background = isEditMode ? "#gold" : "#333";
+            saveBtn.style.display = isEditMode ? "block" : "none";
+            log(isEditMode ? "Edit mode enabled. Click on text to change it." : "Edit mode disabled.");
+        }
+
+        function saveChanges() {
+            const content = {
+                pageTitle: document.getElementById('pageTitle').innerText,
+                metaTitle: document.getElementById('metaTitle').innerText,
+                metaContent: document.getElementById('metaContent').innerHTML,
+                siteLogo: document.getElementById('siteLogo').innerText
+            };
+            localStorage.setItem('siteContent', JSON.stringify(content));
+            toggleEditMode();
+            alert("Все изменения сохранены в памяти браузера!");
+        }
+
+        function loadSavedContent() {
+            const saved = localStorage.getItem('siteContent');
+            if(saved) {
+                const content = JSON.parse(saved);
+                document.getElementById('pageTitle').innerText = content.pageTitle;
+                document.getElementById('metaTitle').innerText = content.metaTitle;
+                document.getElementById('metaContent').innerHTML = content.metaContent;
+                document.getElementById('siteLogo').innerText = content.siteLogo;
+            }
+        }
+
+        function showCounters(id, el) {
+            if(isEditMode) return;
+            document.querySelectorAll('.hero-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            const h = heroes.find(item => item.id === id);
+            document.getElementById('resultBox').style.display = 'block';
+            document.getElementById('targetHero').innerText = `Против ${h.n}:`;
+            document.getElementById('countersList').innerHTML = h.c.map(c => `<div style="padding:10px; background:#222; margin-bottom:5px; border-left:4px solid var(--win)">${c}</div>`).join('');
+        }
+
+        function authRoot() {
+            if(prompt("ROOT_CODE:") === "777") {
                 localStorage.setItem('isRoot', 'true');
                 enableRoot();
-                alert("Доступ разрешен!");
+                alert("ACCESS GRANTED");
             }
         }
 
         function enableRoot() {
-            document.getElementById('adminLink').style.display = 'block';
+            document.getElementById('adminTab').style.display = 'block';
             document.getElementById('badge').style.display = 'inline-block';
-            document.getElementById('loginBtn').style.color = 'var(--gold)';
-            log("Session restored from localStorage.");
         }
 
-        function resetAll() {
+        function clearRoot() {
             localStorage.removeItem('isRoot');
             location.reload();
         }
 
         function log(msg) {
-            const c = document.getElementById('console');
-            c.innerHTML += `<br>> ${msg}`;
-            c.scrollTop = c.scrollHeight;
-        }
-
-        function fakeWin() {
-            const r = Math.floor(Math.random()*100);
-            log(`Success: Generated ${r} fake match wins.`);
-        }
-
-        function editHero() {
-            const h = prompt("Какого героя изменить?");
-            if(h) log(`Warning: Override values for ${h} saved in buffer.`);
-        }
-
-        function loadC(id, el) {
-            document.querySelectorAll('.hero-mini-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            const l = document.getElementById('cl');
-            document.getElementById('ct').innerText = `Контра для ${id.toUpperCase()}:`;
-            l.innerHTML = '';
-            db[id].forEach(c => {
-                l.innerHTML += `<div style="background:#222; padding:10px; margin-bottom:5px; border-left:3px solid var(--win)"><b>${c.n}</b><br><small>${c.d}</small></div>`;
-            });
+            const l = document.getElementById('adminLog');
+            l.innerHTML += `<br>> ${msg}`;
+            l.scrollTop = l.scrollHeight;
         }
 
         function showPage(id, el) {
