@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dota 2 Ultimate Portal</title>
+    <style>
+        /* Плавный скролл и переменные */
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        :root { --main-red: #bf3323; --bg-dark: #0b0b0b; --card-bg: #1a1a1a; }
+        
+        body { font-family: 'Arial', sans-serif; background-color: var(--bg-dark); color: #fff; margin: 0; }
+
+        /* Шапка */
+        header { 
+            background: rgba(0,0,0,0.9); padding: 15px 50px; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--main-red);
+        }
+        .logo { font-size: 24px; font-weight: bold; color: var(--main-red); cursor: default; }
+        nav a { color: #fff; text-decoration: none; margin-left: 20px; transition: 0.3s; font-weight: bold; }
+        nav a:hover { color: var(--main-red); }
+
+        /* Контейнеры */
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        h2 { border-left: 4px solid var(--main-red); padding-left: 15px; margin-bottom: 30px; text-transform: uppercase; }
+
+        /* Калькулятор MMR */
+        .mmr-tool { 
+            background: var(--card-bg); padding: 25px; border-radius: 10px; 
+            text-align: center; margin-bottom: 50px; border: 1px solid #333;
+        }
+        input { padding: 10px; border-radius: 5px; border: none; width: 150px; margin-right: 10px; }
+        .calc-btn { background: var(--main-red); border: none; color: #fff; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 5px; }
+
+        /* Сетка героев */
+        .search-bar { width: 100%; padding: 12px; margin-bottom: 20px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .hero-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid #333; }
+        .hero-card:hover { transform: translateY(-5px); border-color: var(--main-red); }
+        .hero-card img { width: 100%; height: 150px; object-fit: cover; }
+        .hero-info { padding: 15px; }
+
+        /* Таблица матчей */
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); margin-top: 20px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { background: #000; color: var(--main-red); }
+        .win { color: #2ecc71; font-weight: bold; }
+        .lose { color: #e74c3c; font-weight: bold; }
+
+        footer { text-align: center; padding: 40px; color: #555; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">DOTA 2 PRO</div>
+    <nav>
+        <a href="#stats">Статистика</a>
+        <a href="#heroes">Герои</a>
+        <a href="#matches">Матчи</a>
+    </nav>
+</header>
+
+<div class="container" id="stats">
+    <h2>Твой прогресс</h2>
+    <div class="mmr-tool">
+        <p style="margin-bottom: 15px;">Введите текущий MMR, чтобы узнать свой ранг:</p>
+        <input type="number" id="mmrInput" placeholder="Напр: 3500">
+        <button class="calc-btn" onclick="checkRank()">Узнать ранг</button>
+        <h3 id="rankResult" style="margin-top: 20px; color: var(--main-red);"></h3>
+    </div>
+
+    <h2 id="heroes">База героев</h2>
+    <input type="text" id="heroSearch" class="search-bar" placeholder="Поиск героя по имени..." onkeyup="filterHeroes()">
+    <div class="grid" id="heroGrid">
+        <div class="hero-card" data-name="Pudge">
+            <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png">
+            <div class="hero-info"><h3>Pudge</h3><p>Мясник из мертвецов</p></div>
+        </div>
+        <div class="hero-card" data-name="Anti-Mage">
+            <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png">
+            <div class="hero-info"><h3>Anti-Mage</h3><p>Магия — это грех</p></div>
+        </div>
+        <div class="hero-card" data-name="Juggernaut">
+            <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/juggernaut.png">
+            <div class="hero-info"><h3>Juggernaut</h3><p>Мастер меча</p></div>
+        </div>
+        <div class="hero-card" data-name="Crystal Maiden">
+            <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/crystal_maiden.png">
+            <div class="hero-info"><h3>Crystal Maiden</h3><p>Ледяная поддержка</p></div>
+        </div>
+    </div>
+
+    <h2 id="matches" style="margin-top: 50px;">Последние игры Pro-сцены</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Турнир</th>
+                <th>Команды</th>
+                <th>Результат</th>
+                <th>Счет</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>The International</td>
+                <td>Team Spirit vs Liquid</td>
+                <td class="win">Spirit Win</td>
+                <td>2 : 1</td>
+            </tr>
+            <tr>
+                <td>DreamLeague</td>
+                <td>Gaimin Gladiators vs Falcons</td>
+                <td class="lose">Falcons Win</td>
+                <td>0 : 2</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    &copy; 2026 Разработано для фанатов Dota 2. Все права на изображения принадлежат Valve.
+</footer>
+
+<script>
+    // Функция проверки ранга
+    function checkRank() {
+        const mmr = document.getElementById('mmrInput').value;
+        let rank = "";
+        if (mmr < 1000) rank = "Рекрут (Herald)";
+        else if (mmr < 2000) rank = "Страж (Guardian)";
+        else if (mmr < 3000) rank = "Рыцарь (Crusader)";
+        else if (mmr < 4000) rank = "Герой (Archon)";
+        else if (mmr < 5000) rank = "Легенда (Legend)";
+        else if (mmr < 6000) rank = "Властелин (Ancient)";
+        else rank = "Божество / Титан (Divine / Immortal)";
+        
+        document.getElementById('rankResult').innerText = "Ваш ранг: " + rank;
+    }
+
+    // Функция поиска героев
+    function filterHeroes() {
+        let input = document.getElementById('heroSearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('hero-card');
+        
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].getAttribute('data-name').toLowerCase();
+            if (name.includes(input)) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
